@@ -1,3 +1,36 @@
+Vue.component('product-tabs', {
+    props: {
+        reviews: {
+            type: Array,
+            required: false
+        }
+    },
+    template: `
+    <div>   
+    <ul>
+      <span class="tab"
+            :class="{ activeTab: selectedTab === tab }"
+            v-for="(tab, index) in tabs"
+            @click="selectedTab = tab"
+      >{{ tab }}</span>
+    </ul>
+    <div v-show="selectedTab === 'Reviews'">
+      <p v-if="!reviews.length">There are no reviews yet.</p>
+      <ul>
+        <li v-for="review in reviews">
+        <p>{{ review.name }}</p>
+        <p>Rating: {{ review.rating }}</p>
+        <p>{{ review.review }}</p>
+        </li>
+      </ul>
+    </div>
+    <div v-show="selectedTab === 'Make a Review'">
+      <product-review @review-submitted="addReview"></product-review>
+    </div>
+  </div>
+  `,
+})
+
 Vue.component('product-review', {
     template: `
  
@@ -66,6 +99,7 @@ Vue.component('product-review', {
     }
 })
 
+
 Vue.component('product', {
     props: {
         premium: {
@@ -94,7 +128,7 @@ Vue.component('product', {
                     :style="{ backgroundColor:variant.variantColor }"
                     @mouseover="updateProduct(index)"
             ></div>
-           
+           <p>'S', 'M', 'L', 'XL', 'XXL', 'XXXL'</p>
             <button
                     v-on:click="addToCart"
                     :disabled="!inStock"
@@ -103,21 +137,34 @@ Vue.component('product', {
                 Add to cart
             </button>    
         </div>           
-        <div>
-             <h2>Reviews</h2>
-             <p v-if="!reviews.length">There are no reviews yet.</p>
-             <ul>
-               <li v-for="review in reviews">
-               <p>{{ review.name }}</p>
-               <p>Rating: {{ review.rating }}</p>
-               <p>{{ review.review }}</p>
-               </li>
-             </ul>
-            </div> <product-review @review-submitted="addReview"></product-review>
+        <div>   
+        <ul>
+          <span class="tab"
+                :class="{ activeTab: selectedTab === tab }"
+                v-for="(tab, index) in tabs"
+                @click="selectedTab = tab"
+          >{{ tab }}</span>
+        </ul>
+        <div v-show="selectedTab === 'Reviews'">
+          <p v-if="!reviews.length">There are no reviews yet.</p>
+          <ul>
+            <li v-for="review in reviews">
+            <p>{{ review.name }}</p>
+            <p>Rating: {{ review.rating }}</p>
+            <p>{{ review.review }}</p>
+            </li>
+          </ul>
         </div>
+        <div v-show="selectedTab === 'Make a Review'">
+          <product-review @review-submitted="addReview"></product-review>
+        </div>
+      </div>
+    </div>
   `,
     data() {
         return {
+            tabs: ['Reviews', 'Make a Review'],
+            selectedTab: 'Reviews',
             product: "Socks",
             brand: 'Vue Mastery',
             selectedVariant: 0,
